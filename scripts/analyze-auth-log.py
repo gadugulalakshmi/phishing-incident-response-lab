@@ -1,8 +1,9 @@
 import json
+import sys
 from collections import Counter
 from pathlib import Path
 
-log_file = Path("evidence/authentication.log")
+log_file = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("evidence/authentication.log")
 report_file = Path("reports/alerts.json")
 
 normal_ip = "10.10.20.15"
