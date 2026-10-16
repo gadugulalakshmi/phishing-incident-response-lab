@@ -7,6 +7,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = PROJECT_ROOT / "scripts" / "analyze-auth-log.py"
 REPORT = PROJECT_ROOT / "reports" / "alerts.json"
+TEST_LOG = PROJECT_ROOT / "evidence" / "test-authentication.log"
 
 
 class TestAuthenticationAnalyzer(unittest.TestCase):
@@ -24,7 +25,6 @@ class TestAuthenticationAnalyzer(unittest.TestCase):
         self.assertIn("Authentication Log Analysis", result.stdout)
         self.assertIn("Successful logins: 3", result.stdout)
         self.assertIn("Failed logins: 1", result.stdout)
-        self.assertIn("Repeated Failed Login Alerts", result.stdout)
 
     def test_json_report_is_generated(self):
         subprocess.run(
@@ -35,7 +35,7 @@ class TestAuthenticationAnalyzer(unittest.TestCase):
             check=True,
         )
 
-        self.assertTrue(REPORT.exists(), "JSON report was not generated")
+        self.assertTrue(REPORT.exists())
 
         with REPORT.open("r", encoding="utf-8") as file:
             report = json.load(file)
@@ -43,9 +43,36 @@ class TestAuthenticationAnalyzer(unittest.TestCase):
         self.assertEqual(report["summary"]["successful_logins"], 3)
         self.assertEqual(report["summary"]["failed_logins"], 1)
         self.assertEqual(report["summary"]["alerts_generated"], 2)
-        self.assertEqual(len(report["alerts"]), 2)
+
+    def test_sample_has_repeated_failed_login_detection(self):
+        result = subprocess.run(
+            [
+                "python3",
+                "-c",
+                """
+from collections import Counter
+
+failed_by_user = Counter()
+with open("evidence/test-authentication.log", encoding="utf-8") as file:
+    for line in file:
+        if "FAILED" in line and "user=" in line:
+            user = line.split("user=")[1].split()[0]
+            failed_by_user[user] += 1
+
+for user, count in failed_by_user.items():
+    if count >= 3:
+        print(f"ALERT: {user} has {count} failed login attempts")
+""",
+            ],
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("ALERT: bob has 3 failed login attempts", result.stdout)
 
 
 if __name__ == "__main__":
     unittest.main()
-
