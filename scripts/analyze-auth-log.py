@@ -1,6 +1,10 @@
-from collections import Counter, defaultdict
+import json
+from collections import Counter
+from pathlib import Path
 
-log_file = "evidence/authentication.log"
+log_file = Path("evidence/authentication.log")
+report_file = Path("reports/alerts.json")
+
 normal_ip = "10.10.20.15"
 failed_threshold = 3
 
@@ -9,8 +13,9 @@ failed_logins = []
 unusual_successful_logins = []
 ip_activity = Counter()
 failed_by_user = Counter()
+alerts = []
 
-with open(log_file, "r", encoding="utf-8") as file:
+with log_file.open("r", encoding="utf-8") as file:
     for line in file:
         line = line.strip()
 
@@ -23,6 +28,11 @@ with open(log_file, "r", encoding="utf-8") as file:
 
                 if ip != normal_ip:
                     unusual_successful_logins.append(line)
+                    alerts.append({
+                        "type": "unusual_successful_login",
+                        "severity": "medium",
+                        "event": line
+                    })
 
         elif "FAILED" in line:
             failed_logins.append(line)
@@ -30,6 +40,30 @@ with open(log_file, "r", encoding="utf-8") as file:
             if "user=" in line:
                 user = line.split("user=")[1].split()[0]
                 failed_by_user[user] += 1
+
+for user, count in failed_by_user.items():
+    if count >= failed_threshold:
+        alerts.append({
+            "type": "repeated_failed_logins",
+            "severity": "medium",
+            "user": user,
+            "failed_attempts": count
+        })
+
+report_file.parent.mkdir(parents=True, exist_ok=True)
+
+report = {
+    "summary": {
+        "successful_logins": len(successful_logins),
+        "failed_logins": len(failed_logins),
+        "alerts_generated": len(alerts)
+    },
+    "alerts": alerts,
+    "successful_logins_by_ip": dict(ip_activity)
+}
+
+with report_file.open("w", encoding="utf-8") as file:
+    json.dump(report, file, indent=2)
 
 print("=== Authentication Log Analysis ===")
 print(f"Successful logins: {len(successful_logins)}")
@@ -53,3 +87,5 @@ if not alerts_found:
 print("\n=== Successful Login Counts by IP ===")
 for ip, count in ip_activity.items():
     print(f"{ip}: {count} successful login(s)")
+
+print(f"\nJSON alert report saved to: {report_file}")

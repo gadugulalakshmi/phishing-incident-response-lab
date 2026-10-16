@@ -1,0 +1,23 @@
+{
+  "summary": {
+    "successful_logins": 3,
+    "failed_logins": 1,
+    "alerts_generated": 2
+  },
+  "alerts": [
+    {
+      "type": "unusual_successful_login",
+      "severity": "medium",
+      "event": "2026-10-08 10:12:03 SUCCESS user=alice source_ip=185.220.101.45 location=Unknown"
+    },
+    {
+      "type": "unusual_successful_login",
+      "severity": "medium",
+      "event": "2026-10-08 10:14:02 SUCCESS user=alice source_ip=185.220.101.45 location=Unknown"
+    }
+  ],
+  "successful_logins_by_ip": {
+    "10.10.20.15": 1,
+    "185.220.101.45": 2
+  }
+}
