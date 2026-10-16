@@ -1,0 +1,6 @@
+2026-10-08 10:00:12 SUCCESS user=alice source_ip=10.10.20.15 location=Hyderabad
+2026-10-08 10:05:31 INFO user=alice event=phishing_link_clicked
+2026-10-08 10:07:45 INFO user=alice event=credentials_submitted
+2026-10-08 10:12:03 SUCCESS user=alice source_ip=185.220.101.45 location=Unknown
+2026-10-08 10:13:17 FAILED user=alice source_ip=185.220.101.45 location=Unknown
+2026-10-08 10:14:02 SUCCESS user=alice source_ip=185.220.101.45 location=Unknown
