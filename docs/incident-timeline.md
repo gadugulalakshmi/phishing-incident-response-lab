@@ -23,5 +23,6 @@ submission is consistent with a potential account compromise.
 
 ## Incident Status
 
-Potential account compromise confirmed for investigation and
-containment.
+Potential account compromise identified for further investigation
+and containment. The available simulated evidence is suspicious
+but does not independently prove malicious access.
