@@ -44,25 +44,13 @@ class TestAuthenticationAnalyzer(unittest.TestCase):
         self.assertEqual(report["summary"]["failed_logins"], 1)
         self.assertEqual(report["summary"]["alerts_generated"], 2)
 
+    
     def test_sample_has_repeated_failed_login_detection(self):
         result = subprocess.run(
             [
                 "python3",
-                "-c",
-                """
-from collections import Counter
-
-failed_by_user = Counter()
-with open("evidence/test-authentication.log", encoding="utf-8") as file:
-    for line in file:
-        if "FAILED" in line and "user=" in line:
-            user = line.split("user=")[1].split()[0]
-            failed_by_user[user] += 1
-
-for user, count in failed_by_user.items():
-    if count >= 3:
-        print(f"ALERT: {user} has {count} failed login attempts")
-""",
+                str(SCRIPT),
+                "evidence/test-authentication.log",
             ],
             cwd=PROJECT_ROOT,
             capture_output=True,
@@ -71,7 +59,12 @@ for user, count in failed_by_user.items():
         )
 
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("ALERT: bob has 3 failed login attempts", result.stdout)
+        self.assertIn("Failed logins: 3", result.stdout)
+        self.assertIn(
+            "ALERT: bob has 3 failed login attempts",
+            result.stdout,
+        )
+
 
 
 if __name__ == "__main__":
