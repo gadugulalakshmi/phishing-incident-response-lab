@@ -2,9 +2,7 @@
 
 ## Project Overview
 
-This project simulates a phishing attack that may lead to
-user credential compromise. It demonstrates a structured
-incident response workflow and basic authentication log analysis.
+This project simulates a phishing attack that may lead to user credential compromise. It demonstrates a structured incident response workflow and automated authentication log analysis using Python.
 
 ## Objectives
 
@@ -12,36 +10,86 @@ incident response workflow and basic authentication log analysis.
 - Identify suspicious authentication activity.
 - Document Indicators of Compromise (IoCs).
 - Build an incident timeline.
-- Automate basic log analysis using Python.
+- Automate authentication log analysis using Python.
+- Generate a machine-readable JSON alert report.
 - Recommend containment, eradication, and recovery actions.
+- Validate core functionality using automated tests.
 
 ## Tools Used
 
 - Kali Linux
 - Python 3
+- Git and GitHub
 - Linux Terminal
+- JSON
 - Markdown
-- Sample authentication logs
+- Python `unittest`
 
 ## Project Structure
 
-- docs/: Incident scenario, playbook, timeline, and report
-- evidence/: Simulated authentication logs and IoCs
-- scripts/: Python authentication log analyzer
+```text
+IR-Playbook/
+├── docs/
+│   ├── incident-report.md
+│   ├── incident-timeline.md
+│   ├── incident-scenario.md
+│   └── phishing-ir-playbook.md
+├── evidence/
+│   ├── authentication.log
+│   ├── test-authentication.log
+│   └── indicators-of-compromise.md
+├── reports/
+│   └── alerts.json
+├── scripts/
+│   └── analyze-auth-log.py
+├── tests/
+│   └── test_analyzer.py
+└── README.md
+```
 
 ## Detection Logic
 
-The Python script identifies successful logins from IP addresses
-that differ from the configured normal IP baseline. It also
-counts successful and failed authentication events.
+The Python analyzer:
 
-## Key Findings
+- Counts successful and failed authentication events.
+- Flags successful logins from IP addresses outside the configured baseline.
+- Counts failed login attempts by user.
+- Generates alerts when the configured failed-login threshold is reached.
+- Summarizes successful logins by source IP address.
+- Saves alert details and summary statistics to a JSON report.
 
-In the sample dataset, two successful logins originated from
-an IP address different from the configured baseline.
+## Sample Results
 
-These events were flagged for investigation. An unusual IP
-address alone does not prove malicious activity.
+The sample authentication log contains:
+
+- 3 successful login events.
+- 1 failed login event.
+- 2 unusual successful login alerts.
+- A generated JSON report at `reports/alerts.json`.
+
+The suspicious successful logins originated from `185.220.101.45`, which differs from the configured baseline IP `10.10.20.15`.
+
+These events warrant investigation. An unfamiliar IP address alone does not prove malicious activity.
+
+## Running the Analyzer
+
+From the project root directory, run:
+
+```bash
+python3 scripts/analyze-auth-log.py
+```
+
+The script displays authentication statistics and alerts in the terminal and generates `reports/alerts.json`.
+
+## Running Automated Tests
+
+Run the test suite with:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+The tests verify that the analyzer executes successfully and that the JSON report is generated with the expected sample counts and alerts.
 
 ## Incident Response Lifecycle
 
@@ -54,12 +102,13 @@ address alone does not prove malicious activity.
 
 ## Limitations
 
-This is a simulated training project using sample data.
-It has not been tested against a production environment.
+This is a simulated training project using sample data. The detection logic uses a simple configured IP baseline and failed-login threshold. It has not been validated in a production environment.
 
 ## Future Improvements
 
 - Parse logs using structured fields.
-- Generate a machine-readable alert report.
-- Add a dedicated automated test suite for the Python script.
-- Improve detection logic with configurable IP baselines and thresholds.
+- Make IP baselines and thresholds configurable.
+- Expand automated tests to cover more detection scenarios.
+- Improve alert severity and reporting.
+- Integrate additional log sources.
+
