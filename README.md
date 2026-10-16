@@ -60,6 +60,6 @@ It has not been tested against a production environment.
 ## Future Improvements
 
 - Parse logs using structured fields.
-- Detect repeated failed login attempts.
 - Generate a machine-readable alert report.
-- Add automated tests for the Python script.
+- Add a dedicated automated test suite for the Python script.
+- Improve detection logic with configurable IP baselines and thresholds.
