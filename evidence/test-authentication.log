@@ -1,0 +1,3 @@
+2026-10-16 11:00:00 FAILED user=bob source_ip=192.0.2.10
+2026-10-16 11:00:10 FAILED user=bob source_ip=192.0.2.10
+2026-10-16 11:00:20 FAILED user=bob source_ip=192.0.2.10
